@@ -1,7 +1,7 @@
 version: '2'
 services:
   php:
-    image: php:7.0-fpm
+    build: ./docker/php/
     volumes:
       - ./docker/php/php.ini:/usr/local/etc/php/conf.d/php.ini:ro
       - ./app:/var/www/app
