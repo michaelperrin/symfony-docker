@@ -7,6 +7,14 @@ RUN apt-get update \
         git \
         unzip
 
+# Install GD
+RUN apt-get install -y \
+        libfreetype6-dev \
+        libjpeg62-turbo-dev \
+        libpng12-dev \
+    && docker-php-ext-install gd \
+    && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/
+
 # Fix permissions
 RUN usermod -u 1000 www-data
 
