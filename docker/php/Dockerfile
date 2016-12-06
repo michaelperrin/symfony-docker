@@ -7,6 +7,16 @@ RUN apt-get update \
         git \
         unzip
 
+# Install recommended extensions for Symfony
+RUN apt-get update && apt-get install -y \
+        libicu-dev \
+    && docker-php-ext-install \
+        intl \
+        opcache \
+    && docker-php-ext-enable \
+        intl \
+        opcache
+
 # Install GD
 RUN apt-get install -y \
         libfreetype6-dev \
