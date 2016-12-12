@@ -38,3 +38,7 @@ RUN mv composer.phar /usr/local/bin/composer
 RUN curl "https://phar.phpunit.de/phpunit.phar" -L -o "phpunit.phar"
 RUN chmod +x phpunit.phar
 RUN mv phpunit.phar /usr/local/bin/phpunit
+
+# Xdebug
+RUN pecl install xdebug \
+    && docker-php-ext-enable xdebug
