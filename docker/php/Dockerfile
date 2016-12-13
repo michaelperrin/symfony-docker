@@ -25,6 +25,8 @@ RUN apt-get install -y \
     && docker-php-ext-install gd \
     && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/
 
+RUN docker-php-ext-install pdo_mysql
+
 # Fix permissions
 RUN usermod -u 1000 www-data
 
