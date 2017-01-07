@@ -35,3 +35,6 @@ services:
       MYSQL_PASSWORD: password_test
     ports:
       - "3306:3306"
+
+  mongodb:
+    image: mongo:3.4
