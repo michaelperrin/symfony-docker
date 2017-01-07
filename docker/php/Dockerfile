@@ -17,6 +17,10 @@ RUN apt-get update && apt-get install -y \
         intl \
         opcache
 
+# MongoDB extension for PHP 7
+RUN pecl install mongodb \
+    && docker-php-ext-enable mongodb
+
 # Install GD
 RUN apt-get install -y \
         libfreetype6-dev \
