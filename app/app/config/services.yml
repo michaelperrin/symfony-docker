@@ -4,6 +4,13 @@ parameters:
 #    parameter_name: value
 
 services:
-#    service_name:
-#        class: AppBundle\Directory\ClassName
-#        arguments: ["@another_service_name", "plain_value", "%parameter_name%"]
+    old_password_encoder:
+        class: Symfony\Component\Security\Core\Encoder\MessageDigestPasswordEncoder
+        arguments: ["md5", false, 1]
+
+    password_migration_authenticator:
+        class:     AppBundle\Security\PasswordMigrationAuthenticator
+        arguments:
+            - "@security.password_encoder"
+            - "@old_password_encoder"
+            - "@doctrine.orm.entity_manager"
