@@ -4,13 +4,8 @@ parameters:
 #    parameter_name: value
 
 services:
-    old_password_encoder:
-        class: Symfony\Component\Security\Core\Encoder\MessageDigestPasswordEncoder
-        arguments: ["md5", false, 1]
-
     password_migration_authenticator:
         class:     AppBundle\Security\PasswordMigrationAuthenticator
         arguments:
-            - "@security.password_encoder"
-            - "@old_password_encoder"
+            - "@security.encoder_factory"
             - "@doctrine.orm.entity_manager"

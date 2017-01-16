@@ -2,13 +2,14 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\Encoder\EncoderAwareInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * @ORM\Table(name="app_users")
  * @ORM\Entity(repositoryClass="AppBundle\Repository\UserRepository")
  */
-class User implements UserInterface, \Serializable
+class User implements UserInterface, EncoderAwareInterface, \Serializable
 {
     /**
      * @ORM\Column(type="integer")
@@ -28,7 +29,7 @@ class User implements UserInterface, \Serializable
     private $oldPassword;
 
     /**
-     * @ORM\Column(type="string", length=64)
+     * @ORM\Column(type="string", length=64, nullable=true)
      */
     private $password;
 
@@ -207,5 +208,34 @@ class User implements UserInterface, \Serializable
     public function getOldPassword()
     {
         return $this->oldPassword;
+    }
+
+    /**
+     * Tells whether user uses the legacy password encoding or the new one
+     * 
+     * @return boolean
+     */
+    public function hasLegacyPassword()
+    {
+        if ($this->getOldPassword()) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getEncoderName()
+    {
+        if ($this->hasLegacyPassword()) {
+            // User is configured with a legacy password, make use of the legacy encoder
+            // configured in security.yml
+            return 'legacy_encoder';
+        }
+
+        // User is configured with the default password system, make use of the default encoder
+        return null;
     }
 }

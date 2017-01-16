@@ -6,8 +6,7 @@ use Doctrine\Common\Persistence\ObjectManager;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
-use Symfony\Component\Security\Core\Encoder\PasswordEncoderInterface;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
 use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -16,14 +15,11 @@ use Symfony\Component\Security\Http\Authentication\SimpleFormAuthenticatorInterf
 
 class PasswordMigrationAuthenticator implements SimpleFormAuthenticatorInterface
 {
-    private $encoder;
-    private $oldEncoder;
-    private $om;
+    private $encoderFactory;
 
-    public function __construct(UserPasswordEncoderInterface $encoder, PasswordEncoderInterface $oldEncoder, ObjectManager $om)
+    public function __construct(EncoderFactoryInterface $encoderFactory, ObjectManager $om)
     {
-        $this->encoder = $encoder;
-        $this->oldEncoder = $oldEncoder;
+        $this->encoderFactory = $encoderFactory;
         $this->om = $om;
     }
 
@@ -37,7 +33,14 @@ class PasswordMigrationAuthenticator implements SimpleFormAuthenticatorInterface
             throw new CustomUserMessageAuthenticationException('Invalid username or password');
         }
 
-        $passwordValid = $this->isPasswordValid($user, $token);
+        $encoder = $this->encoderFactory->getEncoder($user);
+
+        $password = $user->hasLegacyPassword() ? $user->getOldPassword() : $user->getPassword();
+        $passwordValid = $encoder->isPasswordValid($password, $token->getCredentials(), $user->getSalt());
+
+        if ($user->hasLegacyPassword()) {
+            $this->reencodeUserPassword($user, $token);
+        }
 
         if ($passwordValid) {
             return new UsernamePasswordToken(
@@ -53,32 +56,14 @@ class PasswordMigrationAuthenticator implements SimpleFormAuthenticatorInterface
         throw new CustomUserMessageAuthenticationException('Invalid username or password');
     }
 
-    protected function isPasswordValid(UserInterface $user, TokenInterface $token)
-    {
-        $passwordValid = false;
-
-        if ($user->getOldPassword()) {
-            $plainPassword = $token->getCredentials();
-
-            $passwordValid = $this->oldEncoder->isPasswordValid($user->getOldPassword(), $plainPassword, $user->getSalt());
-
-            if ($passwordValid) {
-                // Password is valid. Encode the password with the new encoder, and remove old password.
-                $this->reencodeUserPassword($user, $token);
-            }
-        } else {
-            $passwordValid = $this->encoder->isPasswordValid($user, $token->getCredentials(), $user->getSalt());
-        }
-
-        return $passwordValid;
-    }
-
     protected function reencodeUserPassword(UserInterface $user, TokenInterface $token)
     {
-        $user
-            ->setPassword($this->encoder->encodePassword($user, $token->getCredentials()))
-            ->setOldPassword(null)
-        ;
+        $user->setOldPassword(null);
+
+        // Use the new encoder
+        $encoder = $this->encoderFactory->getEncoder($user);
+
+        $user->setPassword($encoder->encodePassword($token->getCredentials(), $user->getSalt()));
 
         $this->om->persist($user);
         $this->om->flush();
