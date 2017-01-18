@@ -4,8 +4,16 @@ parameters:
 #    parameter_name: value
 
 services:
-    password_migration_authenticator:
-        class:     AppBundle\Security\PasswordMigrationAuthenticator
+    # app.password_migration_authenticator:
+    #     class:     AppBundle\Security\PasswordMigrationAuthenticator
+    #     arguments:
+    #         - "@security.encoder_factory"
+    #         - "@doctrine.orm.entity_manager"
+
+    app.login_listener:
+        class: AppBundle\EventListener\LoginListener
+        tags:
+            - { name: kernel.event_listener, event: security.interactive_login }
         arguments:
             - "@security.encoder_factory"
             - "@doctrine.orm.entity_manager"
