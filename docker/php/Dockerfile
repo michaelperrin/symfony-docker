@@ -1,4 +1,4 @@
-FROM php:7.0-fpm
+FROM php:7.1-fpm
 MAINTAINER Michaël Perrin <contact@michaelperrin.fr>
 
 # Necessary packages for Composer
@@ -18,6 +18,8 @@ RUN apt-get update && apt-get install -y \
         opcache
 
 # MongoDB extension for PHP 7
+# The libssl-dev is necessary to avoid an error while mongodb extension install
+RUN apt-get update && apt-get install -y libssl-dev
 RUN pecl install mongodb \
     && docker-php-ext-enable mongodb
 

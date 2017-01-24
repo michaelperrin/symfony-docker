@@ -27,7 +27,7 @@ the new host into account.
 
 ### PHP-FPM
 
-PHP-FPM 7.0 is installed with the following configuration:
+PHP-FPM 7.1 is installed with the following configuration:
 
 * Necessary extensions for Symfony
 * MySQL

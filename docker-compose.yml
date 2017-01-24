@@ -8,7 +8,7 @@ services:
       TIMEZONE: Europe/Paris
       XDEBUG_REMOTE_HOST: 10.200.10.1
     volumes:
-      - ./docker/php/php.ini:/usr/local/etc/php/conf.d/php.ini:ro
+      - ./docker/php/php.ini:/usr/local/etc/php/php.ini:ro
       - ./docker/php/xdebug.ini:/usr/local/etc/php/conf.d/xdebug.ini:ro
       - ./app:/var/www/app
     working_dir: /var/www/app
