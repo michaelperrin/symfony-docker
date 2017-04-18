@@ -7,7 +7,6 @@ services:
     environment:
       TIMEZONE: Europe/Paris
       XDEBUG_REMOTE_HOST: 10.200.10.1
-      COMPOSER_ALLOW_SUPERUSER: 1
     volumes:
       - ./docker/php/php.ini:/usr/local/etc/php/php.ini:ro
       - ./docker/php/xdebug.ini:/usr/local/etc/php/conf.d/xdebug.ini:ro
@@ -39,3 +38,9 @@ services:
 
   mongodb:
     image: mongo:3.4
+
+  composer:
+    image: composer:1.4
+    volumes_from:
+      - php
+    working_dir: /var/www/app

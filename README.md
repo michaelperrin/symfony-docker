@@ -3,7 +3,7 @@ Docker configuration to run a Symfony app.
 ## Run
 
     docker-compose up -d
-    docker-compose exec php composer install
+    docker-compose run --rm composer install
 
 You can now visit http://localhost:8080 and you will see the default Symfony page.
 
