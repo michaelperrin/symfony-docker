@@ -1,4 +1,4 @@
-version: '2'
+version: '3'
 services:
   php:
     build: ./docker/php/
@@ -19,9 +19,8 @@ services:
     build: ./docker/nginx/
     depends_on:
       - php
-    volumes_from:
-      - php
     volumes:
+      - ./app:/var/www/app
       - ./docker/nginx/app.conf:/etc/nginx/conf.d/default.conf:ro
     ports:
       - 8080:80
@@ -38,9 +37,3 @@ services:
 
   mongodb:
     image: mongo:3.4
-
-  composer:
-    image: composer:1.4
-    volumes_from:
-      - php
-    working_dir: /var/www/app

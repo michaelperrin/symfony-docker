@@ -1,5 +1,11 @@
-FROM php:7.1-fpm
-MAINTAINER Michaël Perrin <contact@michaelperrin.fr>
+FROM composer:1.9 as composer
+FROM php:7.4-fpm
+
+ENV COMPOSER_ALLOW_SUPERUSER=1
+ENV APCU_VERSION 5.1.18
+
+# Add Composer to PHP container
+COPY --from=composer /usr/bin/composer /usr/local/bin/composer
 
 # Install recommended extensions for Symfony
 RUN apt-get update && apt-get install -y \
@@ -18,13 +24,11 @@ RUN pecl install mongodb \
     && docker-php-ext-enable mongodb
 
 # Install GD
-RUN apt-get install -y \
+RUN apt-get update && apt-get install -y \
         libfreetype6-dev \
         libjpeg62-turbo-dev \
-        libmcrypt-dev \
-        libpng12-dev \
-    && docker-php-ext-install -j$(nproc) iconv mcrypt \
-    && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
+        libpng-dev \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) gd
 
 RUN docker-php-ext-install pdo_mysql
