@@ -2,8 +2,8 @@ Docker configuration to run a Symfony app.
 
 ## Run
 
-    docker-compose up -d
-    docker-compose run --rm composer install
+    docker-compose up -d --build
+    docker-compose run php composer install
 
 You can now visit http://localhost:8080 and you will see the default Symfony page.
 
@@ -12,7 +12,6 @@ You can now visit http://localhost:8080 and you will see the default Symfony pag
 Symfony commands:
 
     docker-compose exec php bin/console
-
 
 ## Included stuff
 
@@ -27,7 +26,7 @@ the new host into account.
 
 ### PHP-FPM
 
-PHP-FPM 7.1 is installed with the following configuration:
+PHP-FPM 7.4 is installed with the following configuration:
 
 * Necessary extensions for Symfony
 * MySQL
