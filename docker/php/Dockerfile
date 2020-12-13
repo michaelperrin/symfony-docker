@@ -1,4 +1,4 @@
-FROM composer:1.9 as composer
+FROM composer:2 as composer
 FROM php:7.4-fpm
 
 ENV COMPOSER_ALLOW_SUPERUSER=1
